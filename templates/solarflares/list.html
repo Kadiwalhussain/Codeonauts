@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Solar Flares List - Space Weather Dashboard{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <h1><i class="fas fa-sun"></i> Solar Flares List</h1>
+    <p class="lead">Browse and filter solar flare data from NASA's DONKI API</p>
+</div>
+
+<!-- Filter Form -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5><i class="fas fa-filter"></i> Filter Options</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="class" class="form-label">Flare Class</label>
+                <select name="class" id="class" class="form-select">
+                    <option value="">All Classes</option>
+                    {% for class_code, class_name in flare_classes %}
+                        <option value="{{ class_code }}" {% if selected_class == class_code %}selected{% endif %}>
+                            {{ class_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="start_date" class="form-label">Start Date</label>
+                <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date|default:'' }}">
+            </div>
+            <div class="col-md-3">
+                <label for="end_date" class="form-label">End Date</label>
+                <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date|default:'' }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">&nbsp;</label>
+                <div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Filter
+                    </button>
+                    <a href="{% url 'solarflares:list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times"></i> Clear
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Flares Table -->
+<div class="card">
+    <div class="card-header">
+        <h5><i class="fas fa-list"></i> Solar Flares ({{ flares|length }} results)</h5>
+    </div>
+    <div class="card-body">
+        {% if flares %}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover">
+                    <thead>
+                        <tr>
+                            <th>Flare ID</th>
+                            <th>Class</th>
+                            <th>Peak Time (UTC)</th>
+                            <th>Source Location</th>
+                            <th>Active Region</th>
+                            <th>Duration</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for flare in flares %}
+                            <tr>
+                                <td>
+                                    <code>{{ flare.flare_id|truncatechars:20 }}</code>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{% if flare.flare_class == 'X' %}danger{% elif flare.flare_class == 'M' %}warning{% elif flare.flare_class == 'C' %}info{% elif flare.flare_class == 'B' %}success{% else %}secondary{% endif %}">
+                                        {{ flare.flare_class }}-Class
+                                    </span>
+                                </td>
+                                <td>{{ flare.peak_time|date:"M j, Y H:i" }}</td>
+                                <td>{{ flare.source_location|default:"N/A" }}</td>
+                                <td>{{ flare.active_region_num|default:"N/A" }}</td>
+                                <td>
+                                    {% if flare.begin_time and flare.end_time %}
+                                        {{ flare.end_time|timeuntil:flare.begin_time }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>{{ flare.created_at|date:"M j, Y" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-sun fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No solar flares found matching your criteria.</p>
+                <a href="{% url 'solarflares:home' %}" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Back to Dashboard
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

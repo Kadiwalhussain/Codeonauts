@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Close Approaches - Space Weather Dashboard{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <h1><i class="fas fa-crosshairs"></i> Close Approaches</h1>
+    <p class="lead">Monitor close approaches of near-Earth asteroids to Earth</p>
+</div>
+
+<!-- Filter Form -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5><i class="fas fa-filter"></i> Filter Options</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="future" value="true" id="future" {% if future_only %}checked{% endif %}>
+                    <label class="form-check-label" for="future">
+                        Future Approaches Only
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Apply Filters
+                </button>
+                <a href="{% url 'asteroids:approaches' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times"></i> Clear
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Approaches Table -->
+<div class="card">
+    <div class="card-header">
+        <h5><i class="fas fa-list"></i> Close Approaches ({{ approaches|length }} results)</h5>
+    </div>
+    <div class="card-body">
+        {% if approaches %}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover">
+                    <thead>
+                        <tr>
+                            <th>Asteroid</th>
+                            <th>Approach Date</th>
+                            <th>Distance (km)</th>
+                            <th>Distance (Lunar)</th>
+                            <th>Velocity (km/s)</th>
+                            <th>Orbiting Body</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for approach in approaches %}
+                            <tr>
+                                <td>
+                                    <strong>{{ approach.asteroid.name|truncatechars:25 }}</strong>
+                                    {% if approach.asteroid.is_potentially_hazardous %}
+                                        <span class="badge bg-danger ms-1">Hazardous</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ approach.close_approach_date|date:"M j, Y H:i" }}</td>
+                                <td>{{ approach.miss_distance_kilometers|floatformat:0 }}</td>
+                                <td>{{ approach.miss_distance_lunar|floatformat:2 }}</td>
+                                <td>{{ approach.relative_velocity_km_per_sec|floatformat:2 }}</td>
+                                <td>{{ approach.orbiting_body }}</td>
+                                <td>
+                                    {% if approach.is_future %}
+                                        <span class="badge bg-warning">Future</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Past</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-crosshairs fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No close approaches found matching your criteria.</p>
+                <a href="{% url 'asteroids:home' %}" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Back to Dashboard
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

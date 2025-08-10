@@ -1,0 +1,327 @@
+/* Space Weather Dashboard - Utility Classes and Dark Mode Support */
+
+/* Utility Classes */
+.text-glow {
+    text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+}
+
+.text-glow-green {
+    text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+    color: #4caf50;
+}
+
+.text-glow-orange {
+    text-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+    color: #ff9800;
+}
+
+.text-glow-red {
+    text-shadow: 0 0 10px rgba(244, 67, 54, 0.5);
+    color: #f44336;
+}
+
+/* Enhanced visibility for important elements */
+.high-contrast {
+    background: rgba(0, 0, 0, 0.9);
+    color: #ffffff;
+    border: 2px solid var(--accent-color);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.glass-panel {
+    background: rgba(35, 35, 56, 0.9);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(79, 195, 247, 0.3);
+    border-radius: 16px;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Better text readability */
+.readable-text {
+    color: #e8e8f0;
+    line-height: 1.7;
+    font-weight: 500;
+}
+
+.readable-text-secondary {
+    color: #c4c4d8;
+    line-height: 1.6;
+}
+
+/* Enhanced button variants */
+.btn-space-green {
+    background: linear-gradient(135deg, #4caf50, #388e3c);
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.btn-space-green:hover {
+    background: linear-gradient(135deg, #388e3c, #2e7d32);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    color: white;
+}
+
+.btn-space-orange {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+}
+
+.btn-space-orange:hover {
+    background: linear-gradient(135deg, #f57c00, #ef6c00);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+    color: white;
+}
+
+.btn-space-red {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+}
+
+.btn-space-red:hover {
+    background: linear-gradient(135deg, #d32f2f, #c62828);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
+    color: white;
+}
+
+/* Enhanced card variants */
+.card-success {
+    border-color: rgba(76, 175, 80, 0.3);
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05));
+}
+
+.card-success .card-header {
+    background: rgba(76, 175, 80, 0.15);
+    color: #4caf50;
+    border-bottom-color: rgba(76, 175, 80, 0.3);
+}
+
+.card-warning {
+    border-color: rgba(255, 152, 0, 0.3);
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 152, 0, 0.05));
+}
+
+.card-warning .card-header {
+    background: rgba(255, 152, 0, 0.15);
+    color: #ff9800;
+    border-bottom-color: rgba(255, 152, 0, 0.3);
+}
+
+.card-danger {
+    border-color: rgba(244, 67, 54, 0.3);
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.1), rgba(244, 67, 54, 0.05));
+}
+
+.card-danger .card-header {
+    background: rgba(244, 67, 54, 0.15);
+    color: #f44336;
+    border-bottom-color: rgba(244, 67, 54, 0.3);
+}
+
+/* Improved list styles */
+.list-space {
+    background: transparent;
+    border: none;
+}
+
+.list-space .list-group-item {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--primary-text);
+    margin-bottom: 0.5rem;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.list-space .list-group-item:hover {
+    transform: translateX(8px);
+    border-color: rgba(79, 195, 247, 0.5);
+    background: rgba(79, 195, 247, 0.05);
+}
+
+/* Progress bars */
+.progress-space {
+    background: var(--secondary-bg);
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-space .progress-bar {
+    background: linear-gradient(90deg, var(--accent-color), var(--accent-hover));
+    border-radius: 4px;
+    transition: width 0.6s ease;
+}
+
+/* Data tables enhancement */
+.table-responsive-space {
+    background: var(--glass-bg);
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    padding: 1rem;
+    backdrop-filter: blur(15px);
+}
+
+/* Modal improvements */
+.modal-content {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--glass-border);
+    background: rgba(79, 195, 247, 0.1);
+}
+
+.modal-title {
+    color: var(--accent-color);
+}
+
+.modal-body {
+    color: var(--primary-text);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--glass-border);
+}
+
+/* Tooltip improvements */
+.tooltip .tooltip-inner {
+    background: var(--glass-bg);
+    color: var(--primary-text);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(15px);
+}
+
+.tooltip .tooltip-arrow::before {
+    border-top-color: var(--glass-border);
+}
+
+/* Form enhancements */
+.form-control-space {
+    background: var(--glass-bg);
+    border: 2px solid var(--border-color);
+    color: var(--primary-text);
+    border-radius: 12px;
+    padding: 0.875rem 1.25rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.form-control-space:focus {
+    background: var(--glass-bg);
+    border-color: var(--accent-color);
+    color: var(--primary-text);
+    box-shadow: 0 0 0 0.25rem rgba(79, 195, 247, 0.25);
+    transform: translateY(-2px);
+}
+
+.form-control-space::placeholder {
+    color: var(--secondary-text);
+    opacity: 0.8;
+}
+
+/* Navbar enhancements */
+.navbar-toggler {
+    border: 2px solid var(--accent-color);
+    padding: 0.5rem 0.75rem;
+}
+
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 0.25rem rgba(79, 195, 247, 0.25);
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2879, 195, 247, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Footer enhancements */
+.footer a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+
+/* Accessibility improvements */
+@media (prefers-color-scheme: light) {
+    /* Light mode fallback - though the app is designed for dark mode */
+    :root {
+        --primary-text: #2c2c2c;
+        --secondary-text: #555555;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    :root {
+        --primary-text: #ffffff;
+        --secondary-text: #e0e0e0;
+        --accent-color: #00e5ff;
+        --border-color: #ffffff;
+    }
+    
+    .card {
+        border-width: 2px;
+    }
+    
+    .btn {
+        border: 2px solid currentColor;
+    }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Print styles */
+@media print {
+    .navbar, .footer, .btn {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    
+    .card {
+        border: 1px solid #000 !important;
+        background: white !important;
+    }
+}

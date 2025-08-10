@@ -1,0 +1,374 @@
+/* Space Weather Dashboard - Enhanced Animations and Effects */
+
+/* Enhanced space particles with different sizes and colors */
+.space-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.space-particles::before,
+.space-particles::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        /* Main stars */
+        radial-gradient(2px 2px at 20px 30px, #4fc3f7, transparent),
+        radial-gradient(2px 2px at 40px 70px, #29b6f6, transparent),
+        radial-gradient(1px 1px at 90px 40px, #81c784, transparent),
+        radial-gradient(1px 1px at 130px 80px, #ffb74d, transparent),
+        radial-gradient(2px 2px at 160px 30px, #f48fb1, transparent),
+        /* Additional layer */
+        radial-gradient(1px 1px at 200px 50px, #4fc3f7, transparent),
+        radial-gradient(1px 1px at 250px 90px, #29b6f6, transparent),
+        radial-gradient(2px 2px at 300px 20px, #81c784, transparent);
+    background-repeat: repeat;
+    background-size: 400px 200px;
+    animation: float 25s linear infinite;
+    opacity: 0.4;
+}
+
+.space-particles::after {
+    background-size: 300px 150px;
+    animation: float 20s linear infinite reverse;
+    opacity: 0.2;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px) translateX(0px); }
+    25% { transform: translateY(-10px) translateX(5px); }
+    50% { transform: translateY(-5px) translateX(-5px); }
+    75% { transform: translateY(-15px) translateX(3px); }
+    100% { transform: translateY(0px) translateX(0px); }
+}
+
+/* Enhanced card hover effects with glow */
+.card {
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(79, 195, 247, 0.03),
+        transparent
+    );
+    transform: rotate(45deg);
+    transition: transform 0.6s;
+    pointer-events: none;
+}
+
+.card:hover::before {
+    transform: rotate(45deg) translate(50%, 50%);
+}
+
+/* Glowing text effect for important headings */
+.glow-text {
+    text-shadow: 
+        0 0 5px rgba(79, 195, 247, 0.5),
+        0 0 10px rgba(79, 195, 247, 0.3),
+        0 0 15px rgba(79, 195, 247, 0.2);
+}
+
+/* Solar flare animation */
+@keyframes solarFlare {
+    0%, 100% { 
+        box-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 
+            0 0 30px rgba(255, 193, 7, 0.8),
+            0 0 40px rgba(255, 152, 0, 0.6);
+        transform: scale(1.02);
+    }
+}
+
+.solar-flare-effect {
+    animation: solarFlare 3s ease-in-out infinite;
+}
+
+/* Asteroid floating effect */
+@keyframes asteroidFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25% { transform: translateY(-5px) rotate(1deg); }
+    50% { transform: translateY(-10px) rotate(0deg); }
+    75% { transform: translateY(-5px) rotate(-1deg); }
+}
+
+.asteroid-float {
+    animation: asteroidFloat 4s ease-in-out infinite;
+}
+
+/* Nebula background effect for hero sections */
+.nebula-bg {
+    position: relative;
+    overflow: hidden;
+}
+
+.nebula-bg::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+        radial-gradient(ellipse at 25% 25%, rgba(79, 195, 247, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 75% 75%, rgba(156, 39, 176, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(76, 175, 80, 0.08) 0%, transparent 50%);
+    animation: nebulaSwirl 30s linear infinite;
+    z-index: -1;
+}
+
+@keyframes nebulaSwirl {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Interactive button effects */
+.btn-space {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #4fc3f7, #29b6f6);
+    border: none;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.btn-space::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s;
+}
+
+.btn-space:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 8px 25px rgba(79, 195, 247, 0.4),
+        0 0 20px rgba(79, 195, 247, 0.3);
+}
+
+.btn-space:hover::before {
+    left: 100%;
+}
+
+/* Data visualization enhancements */
+.chart-container {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1rem;
+    backdrop-filter: blur(15px);
+    transition: all 0.3s ease;
+}
+
+.chart-container:hover {
+    border-color: rgba(79, 195, 247, 0.4);
+    box-shadow: 0 8px 32px rgba(79, 195, 247, 0.1);
+}
+
+/* Enhanced table styles */
+.table-space {
+    background: transparent;
+    color: var(--primary-text);
+}
+
+.table-space thead th {
+    background: linear-gradient(135deg, rgba(79, 195, 247, 0.2), rgba(79, 195, 247, 0.1));
+    color: var(--accent-color);
+    border: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1rem;
+    position: relative;
+}
+
+.table-space thead th::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+}
+
+.table-space tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.table-space tbody tr:hover {
+    background: rgba(79, 195, 247, 0.05);
+    transform: translateX(5px);
+}
+
+.table-space tbody td {
+    padding: 1rem;
+    border: none;
+    color: var(--secondary-text);
+}
+
+/* Status indicators */
+.status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+    animation: pulse 2s infinite;
+}
+
+.status-active {
+    background: #4caf50;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
+
+.status-warning {
+    background: #ff9800;
+    box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+}
+
+.status-danger {
+    background: #f44336;
+    box-shadow: 0 0 10px rgba(244, 67, 54, 0.5);
+}
+
+/* Loading animations */
+.loading-space {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(79, 195, 247, 0.3);
+    border-top: 3px solid var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-dots {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.loading-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    animation: loadingDots 1.4s ease-in-out infinite both;
+}
+
+.loading-dot:nth-child(1) { animation-delay: -0.32s; }
+.loading-dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes loadingDots {
+    0%, 80%, 100% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Responsive enhancements */
+@media (max-width: 768px) {
+    .space-particles::before,
+    .space-particles::after {
+        background-size: 200px 100px;
+    }
+    
+    .nebula-bg::before {
+        animation-duration: 20s;
+    }
+    
+    .stats-number {
+        font-size: 2rem;
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    .space-particles::before,
+    .space-particles::after,
+    .nebula-bg::before {
+        animation: none;
+    }
+    
+    .card::before,
+    .btn-space::before {
+        display: none;
+    }
+    
+    .asteroid-float,
+    .solar-flare-effect {
+        animation: none;
+    }
+}
+
+/* Focus states for accessibility */
+.btn:focus,
+.form-control:focus,
+.nav-link:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Custom scrollbar for webkit browsers */
+.custom-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: var(--secondary-bg);
+    border-radius: 4px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+    border-radius: 4px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--accent-hover), #1976d2);
+}

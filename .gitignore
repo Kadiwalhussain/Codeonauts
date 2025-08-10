@@ -1,0 +1,52 @@
+# Django
+*.pyc
+__pycache__/
+db.sqlite3
+*.log
+.env
+.venv
+venv/
+env/
+
+# Static files (will be regenerated)
+staticfiles/
+static/admin/
+static/rest_framework/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Secrets
+secrets.txt
+nasa_api_key.txt
+*.key
+*.pem
+
+# Logs
+logs/
+*.log
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# pytest
+.pytest_cache/
+
+# Temporary files
+*.tmp
+*.temp

@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+
+{% block title %}Near-Earth Asteroids - Space Weather Dashboard{% endblock %}
+
+{% block content %}
+<div class="hero-section nebula-bg asteroid-float">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1 class="glow-text"><i class="fas fa-meteor"></i> Near-Earth Asteroids Dashboard</h1>
+            <p class="lead">Track near-Earth asteroids and their close approaches using data from NASA's NeoWs API. Monitor potentially hazardous objects and upcoming encounters.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <button class="btn btn-space btn-primary" onclick="refreshAsteroids()">
+                <i class="fas fa-sync-alt"></i> Refresh Data
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="loading" class="loading-space" style="display: none;">
+    <div class="text-center">
+        <div class="loading-spinner"></div>
+        <div class="loading-dots">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+        </div>
+        <p class="mt-3">Fetching latest asteroid data...</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stats-card">
+            <i class="fas fa-meteor fa-2x text-warning mb-2"></i>
+            <div class="stats-number">{{ total_asteroids }}</div>
+            <p class="text-muted">Total Asteroids</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card">
+            <i class="fas fa-crosshairs fa-2x text-danger mb-2"></i>
+            <div class="stats-number">{{ hazardous_count }}</div>
+            <p class="text-muted">Potentially Hazardous</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card">
+            <i class="fas fa-satellite fa-2x text-info mb-2"></i>
+            <div class="stats-number">{{ total_approaches }}</div>
+            <p class="text-muted">Close Approaches</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card">
+            <i class="fas fa-calendar-alt fa-2x text-success mb-2"></i>
+            <div class="stats-number">{{ upcoming_approaches|length }}</div>
+            <p class="text-muted">Upcoming (7 days)</p>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-scatter"></i> Asteroid Close Approaches: Distance vs Velocity</h5>
+            </div>
+            <div class="card-body">
+                {% if scatter_chart %}
+                    <div id="scatter-chart"></div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-scatter fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No scatter plot data available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-line"></i> Upcoming Close Approaches</h5>
+            </div>
+            <div class="card-body">
+                {% if distance_chart %}
+                    <div id="distance-chart"></div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No timeline data available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Approaches and Hazardous Asteroids -->
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-list"></i> Recent Close Approaches</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_approaches %}
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Asteroid</th>
+                                    <th>Approach Date</th>
+                                    <th>Distance (km)</th>
+                                    <th>Velocity (km/s)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for approach in recent_approaches %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ approach.asteroid.name|truncatechars:20 }}</strong>
+                                            {% if approach.asteroid.is_potentially_hazardous %}
+                                                <span class="badge bg-danger ms-1">Hazardous</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ approach.close_approach_date|date:"M j, Y H:i" }}</td>
+                                        <td>{{ approach.miss_distance_kilometers|floatformat:0 }}</td>
+                                        <td>{{ approach.relative_velocity_km_per_sec|floatformat:2 }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-list fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No recent approaches data available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-exclamation-triangle"></i> Potentially Hazardous Asteroids</h5>
+            </div>
+            <div class="card-body">
+                {% if hazardous_asteroids %}
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Asteroid</th>
+                                    <th>Diameter (km)</th>
+                                    <th>Magnitude</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for asteroid in hazardous_asteroids %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ asteroid.name|truncatechars:20 }}</strong>
+                                        </td>
+                                        <td>{{ asteroid.estimated_diameter_min|floatformat:2 }} - {{ asteroid.estimated_diameter_max|floatformat:2 }}</td>
+                                        <td>{{ asteroid.absolute_magnitude_h|floatformat:1 }}</td>
+                                        <td>
+                                            {% if asteroid.is_sentry_object %}
+                                                <span class="badge bg-warning">Sentry</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Hazardous</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-exclamation-triangle fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No hazardous asteroids data available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Links -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-link"></i> Quick Links</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <a href="{% url 'asteroids:list' %}" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-list"></i> View All Asteroids
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="{% url 'asteroids:approaches' %}" class="btn btn-outline-info w-100 mb-2">
+                            <i class="fas fa-crosshairs"></i> View Close Approaches
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="https://cneos.jpl.nasa.gov/" target="_blank" class="btn btn-outline-secondary w-100 mb-2">
+                            <i class="fas fa-external-link-alt"></i> NASA CNEOS
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function refreshAsteroids() {
+    showLoading('loading');
+    
+    fetch('{% url "asteroids:refresh" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCSRFToken(),
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideLoading('loading');
+        
+        if (data.success) {
+            showAlert(data.message, 'success');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            showAlert('Error refreshing data: ' + data.error, 'danger');
+        }
+    })
+    .catch(error => {
+        hideLoading('loading');
+        showAlert('Error refreshing data: ' + error.message, 'danger');
+    });
+}
+
+// Render Plotly charts
+{% if scatter_chart %}
+    Plotly.newPlot('scatter-chart', JSON.parse('{{ scatter_chart|safe }}').data, JSON.parse('{{ scatter_chart|safe }}').layout);
+{% endif %}
+
+{% if distance_chart %}
+    Plotly.newPlot('distance-chart', JSON.parse('{{ distance_chart|safe }}').data, JSON.parse('{{ distance_chart|safe }}').layout);
+{% endif %}
+</script>
+{% endblock %} 

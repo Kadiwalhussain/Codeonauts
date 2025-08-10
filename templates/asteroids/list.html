@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Asteroids List - Space Weather Dashboard{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <h1><i class="fas fa-meteor"></i> Near-Earth Asteroids List</h1>
+    <p class="lead">Browse and filter near-Earth asteroid data from NASA's NeoWs API</p>
+</div>
+
+<!-- Filter Form -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5><i class="fas fa-filter"></i> Filter Options</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="hazardous" value="true" id="hazardous" {% if hazardous_only %}checked{% endif %}>
+                    <label class="form-check-label" for="hazardous">
+                        Potentially Hazardous Only
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="sentry" value="true" id="sentry" {% if sentry_only %}checked{% endif %}>
+                    <label class="form-check-label" for="sentry">
+                        Sentry Objects Only
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Apply Filters
+                </button>
+                <a href="{% url 'asteroids:list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times"></i> Clear
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Asteroids Table -->
+<div class="card">
+    <div class="card-header">
+        <h5><i class="fas fa-list"></i> Near-Earth Asteroids ({{ asteroids|length }} results)</h5>
+    </div>
+    <div class="card-body">
+        {% if asteroids %}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>ID</th>
+                            <th>Diameter (km)</th>
+                            <th>Magnitude</th>
+                            <th>Hazardous</th>
+                            <th>Sentry</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for asteroid in asteroids %}
+                            <tr>
+                                <td>
+                                    <strong>{{ asteroid.name|truncatechars:30 }}</strong>
+                                </td>
+                                <td>
+                                    <code>{{ asteroid.neo_reference_id|truncatechars:15 }}</code>
+                                </td>
+                                <td>
+                                    {{ asteroid.estimated_diameter_min|floatformat:2 }} - {{ asteroid.estimated_diameter_max|floatformat:2 }}
+                                </td>
+                                <td>{{ asteroid.absolute_magnitude_h|floatformat:1 }}</td>
+                                <td>
+                                    {% if asteroid.is_potentially_hazardous %}
+                                        <span class="badge bg-danger">Yes</span>
+                                    {% else %}
+                                        <span class="badge bg-success">No</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if asteroid.is_sentry_object %}
+                                        <span class="badge bg-warning">Yes</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">No</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ asteroid.created_at|date:"M j, Y" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-meteor fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No asteroids found matching your criteria.</p>
+                <a href="{% url 'asteroids:home' %}" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Back to Dashboard
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 
