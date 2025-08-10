@@ -83,9 +83,11 @@ This dashboard is designed for:
 4. Push to the branch: `git push origin feature-name`
 5. Submit a pull request
 
-## � License
+## video: 
 
-This project is open source and available under the [MIT License](LICENSE).
+https://github.com/user-attachments/assets/611bf4db-1e08-4ca4-a422-7e6241d5ba15
+
+
 
 ## 🙏 Acknowledgments
 
@@ -96,7 +98,7 @@ This project is open source and available under the [MIT License](LICENSE).
 ## 📞 Contact
 
 - GitHub: [@Kadiwalhussain](https://github.com/Kadiwalhussain)
-- LinkedIn: [Your LinkedIn Profile]
+- LinkedIn: [https://www.linkedin.com/in/m-hussain-kadiwal-6026b9261/]
 
 ---
 
