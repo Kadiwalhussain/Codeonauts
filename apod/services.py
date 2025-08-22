@@ -7,9 +7,6 @@ from .models import APOD
 
 
 
-
-
-
 logger = logging.getLogger(__name__)
 
 
