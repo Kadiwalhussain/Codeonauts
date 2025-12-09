@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: space-weather-dashboard
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn space_weather_dashboard.wsgi
+    envVars:
+      - key: SECRET_KEY
+        sync: false
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        sync: false
+      - key: NASA_API_KEY
+        sync: false
