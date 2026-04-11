@@ -33,7 +33,16 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # Render.com sets RENDER=True in their environment
 if os.getenv('RENDER'):
-    ALLOWED_HOSTS += ['.onrender.com']
+    ALLOWED_HOSTS += ['.onrender.com', '.hussainkadiwal.tech']
+
+# CSRF trusted origins (required for POST requests over HTTPS)
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000').split(',')
+]
+
+# Trust the proxy headers from Render
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Application definition
