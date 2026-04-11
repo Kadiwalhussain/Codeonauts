@@ -16,7 +16,11 @@ def solar_flares_home(request):
     """
     try:
         service = SolarFlareService()
-        
+
+        # Auto-fetch from NASA API if database is empty
+        if SolarFlare.objects.count() == 0:
+            service.fetch_solar_flares()
+
         # Get recent flares
         recent_flares = service.get_recent_flares(days=30)
         

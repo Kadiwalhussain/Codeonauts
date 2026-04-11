@@ -17,7 +17,11 @@ def asteroids_home(request):
     """
     try:
         service = AsteroidService()
-        
+
+        # Auto-fetch from NASA API if database is empty
+        if Asteroid.objects.count() == 0:
+            service.fetch_asteroids()
+
         # Get recent approaches and hazardous asteroids
         recent_approaches = service.get_recent_approaches(days=30)
         hazardous_asteroids = service.get_hazardous_asteroids()
