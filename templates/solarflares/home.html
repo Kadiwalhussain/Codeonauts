@@ -1,91 +1,102 @@
 {% extends 'base.html' %}
-
-{% block title %}Solar Flares - Space Weather Dashboard{% endblock %}
+{% block title %}Solar Flares — SpaceWatch{% endblock %}
 
 {% block content %}
-<div class="hero-section nebula-bg solar-flare-effect">
+
+<!-- Page Hero -->
+<div class="page-hero mb-4">
     <div class="row align-items-center">
-        <div class="col-md-8">
-            <h1 class="glow-text"><i class="fas fa-sun"></i> Solar Flares Dashboard</h1>
-            <p class="lead">Monitor solar activity with real-time data from NASA's DONKI API. Track flare classes, timing, and solar weather patterns.</p>
+        <div class="col-lg-8">
+            <span class="hero-icon"><i class="fas fa-sun"></i></span>
+            <h1>Solar Flares Dashboard</h1>
+            <p class="lead">
+                Monitor solar activity in real time using NASA's DONKI API.
+                Track flare classes, timing, and solar weather patterns affecting Earth.
+            </p>
+            <div class="hero-actions">
+                <button class="btn btn-primary" onclick="refreshSolarFlares()" id="refreshBtn">
+                    <i class="fas fa-rotate-right"></i> Refresh Data
+                </button>
+                <a href="{% url 'solarflares:list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-list"></i> View All Flares
+                </a>
+            </div>
         </div>
-        <div class="col-md-4 text-end">
-            <button class="btn btn-space btn-primary" onclick="refreshSolarFlares()">
-                <i class="fas fa-sync-alt"></i> Refresh Data
-            </button>
+        <div class="col-lg-4 d-none d-lg-flex justify-content-end">
+            <div style="font-size:6rem; opacity:0.15; line-height:1;">☀️</div>
         </div>
     </div>
 </div>
 
-<div id="loading" class="loading-space" style="display: none;">
-    <div class="text-center">
-        <div class="loading-spinner"></div>
-        <div class="loading-dots">
-            <div class="loading-dot"></div>
-            <div class="loading-dot"></div>
-            <div class="loading-dot"></div>
-        </div>
-        <p class="mt-3">Fetching latest solar flare data...</p>
-    </div>
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loading">
+    <div class="loading-ring"></div>
+    <span>Fetching solar flare data…</span>
 </div>
 
-<!-- Statistics Cards -->
-<div class="row mb-4">
+<!-- Stats Row -->
+<div class="row g-3 mb-4">
     <div class="col-md-4">
-        <div class="stats-card">
-            <i class="fas fa-sun fa-2x text-warning mb-2"></i>
-            <div class="stats-number">{{ total_flares }}</div>
-            <p class="text-muted">Total Flares (30 days)</p>
+        <div class="stat-card">
+            <span class="stat-icon text-warning"><i class="fas fa-sun"></i></span>
+            <div class="stat-number">{{ total_flares }}</div>
+            <div class="stat-label">Total Flares (30 days)</div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="stats-card">
-            <i class="fas fa-fire fa-2x text-danger mb-2"></i>
-            <div class="stats-number">{{ recent_flares|length }}</div>
-            <p class="text-muted">Recent Flares</p>
+        <div class="stat-card">
+            <span class="stat-icon text-danger"><i class="fas fa-fire-flame-curved"></i></span>
+            <div class="stat-number">{{ recent_flares|length }}</div>
+            <div class="stat-label">Recent Flares</div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="stats-card">
-            <i class="fas fa-chart-line fa-2x text-info mb-2"></i>
-            <div class="stats-number">{{ recent_flares|length|add:"0" }}</div>
-            <p class="text-muted">Active Period</p>
+        <div class="stat-card">
+            <span class="stat-icon" style="color:var(--accent);"><i class="fas fa-chart-line"></i></span>
+            <div class="stat-number">
+                {% if recent_flares %}{{ recent_flares.0.flare_class }}{% else %}–{% endif %}
+            </div>
+            <div class="stat-label">Latest Flare Class</div>
         </div>
     </div>
 </div>
 
 <!-- Charts Row -->
-<div class="row mb-4">
+<div class="row g-4 mb-4">
     <div class="col-lg-8">
-        <div class="card">
+        <div class="card h-100">
             <div class="card-header">
-                <h5><i class="fas fa-chart-line"></i> Solar Flare Timeline</h5>
+                <i class="fas fa-chart-line"></i>
+                <h5>Solar Flare Timeline</h5>
             </div>
             <div class="card-body">
                 {% if timeline_chart %}
-                    <div id="timeline-chart"></div>
+                    <div id="timeline-chart" class="chart-box"></div>
                 {% else %}
-                    <div class="text-center py-4">
-                        <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
-                        <p class="text-muted">No timeline data available</p>
+                    <div class="empty-state">
+                        <span class="empty-icon"><i class="fas fa-chart-line"></i></span>
+                        <h4>No Timeline Data</h4>
+                        <p>Refresh data to load solar activity chart.</p>
                     </div>
                 {% endif %}
             </div>
         </div>
     </div>
-    
+
     <div class="col-lg-4">
-        <div class="card">
+        <div class="card h-100">
             <div class="card-header">
-                <h5><i class="fas fa-chart-pie"></i> Flare Class Distribution</h5>
+                <i class="fas fa-chart-pie"></i>
+                <h5>Flare Class Distribution</h5>
             </div>
             <div class="card-body">
                 {% if class_distribution %}
-                    <div id="class-distribution"></div>
+                    <div id="class-distribution" class="chart-box"></div>
                 {% else %}
-                    <div class="text-center py-4">
-                        <i class="fas fa-chart-pie fa-3x text-muted mb-3"></i>
-                        <p class="text-muted">No distribution data available</p>
+                    <div class="empty-state">
+                        <span class="empty-icon"><i class="fas fa-chart-pie"></i></span>
+                        <h4>No Distribution Data</h4>
+                        <p>No class distribution available yet.</p>
                     </div>
                 {% endif %}
             </div>
@@ -96,15 +107,19 @@
 <!-- Recent Flares Table -->
 <div class="card">
     <div class="card-header">
-        <h5><i class="fas fa-list"></i> Recent Solar Flares</h5>
+        <i class="fas fa-list-ul"></i>
+        <h5>Recent Solar Flares</h5>
+        {% if recent_flares %}
+            <span class="pill-count ms-auto">{{ recent_flares|length }}</span>
+        {% endif %}
     </div>
-    <div class="card-body">
+    <div class="card-body p-0">
         {% if recent_flares %}
             <div class="table-responsive">
-                <table class="table table-dark table-hover">
+                <table class="table mb-0">
                     <thead>
                         <tr>
-                            <th>Flare Class</th>
+                            <th>Class</th>
                             <th>Peak Time (UTC)</th>
                             <th>Source Location</th>
                             <th>Active Region</th>
@@ -113,80 +128,101 @@
                     </thead>
                     <tbody>
                         {% for flare in recent_flares %}
-                            <tr>
-                                <td>
-                                    <span class="badge bg-{% if flare.flare_class == 'X' %}danger{% elif flare.flare_class == 'M' %}warning{% elif flare.flare_class == 'C' %}info{% elif flare.flare_class == 'B' %}success{% else %}secondary{% endif %}">
-                                        {{ flare.flare_class }}-Class
-                                    </span>
-                                </td>
-                                <td>{{ flare.peak_time|date:"M j, Y H:i" }}</td>
-                                <td>{{ flare.source_location|default:"N/A" }}</td>
-                                <td>{{ flare.active_region_num|default:"N/A" }}</td>
-                                <td>
-                                    {% if flare.begin_time and flare.end_time %}
-                                        {{ flare.end_time|timeuntil:flare.begin_time }}
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                            </tr>
+                        <tr>
+                            <td>
+                                <span class="badge bg-{% if flare.flare_class == 'X' %}danger{% elif flare.flare_class == 'M' %}warning{% elif flare.flare_class == 'C' %}info{% elif flare.flare_class == 'B' %}success{% else %}secondary{% endif %}">
+                                    {{ flare.flare_class }}-Class
+                                </span>
+                            </td>
+                            <td>{{ flare.peak_time|date:"M j, Y H:i" }}</td>
+                            <td>{{ flare.source_location|default:"—" }}</td>
+                            <td>{{ flare.active_region_num|default:"—" }}</td>
+                            <td>
+                                {% if flare.begin_time and flare.end_time %}
+                                    {{ flare.end_time|timeuntil:flare.begin_time }}
+                                {% else %}—
+                                {% endif %}
+                            </td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-            <div class="text-center mt-3">
-                <a href="{% url 'solarflares:list' %}" class="btn btn-outline-primary">
+            <div class="p-3 border-top" style="border-color:var(--border) !important;">
+                <a href="{% url 'solarflares:list' %}" class="btn btn-outline-primary btn-sm">
                     <i class="fas fa-list"></i> View All Flares
                 </a>
             </div>
         {% else %}
-            <div class="text-center py-4">
-                <i class="fas fa-sun fa-3x text-muted mb-3"></i>
-                <p class="text-muted">No recent solar flares data available</p>
+            <div class="empty-state">
+                <span class="empty-icon"><i class="fas fa-sun"></i></span>
+                <h4>No Solar Flare Data</h4>
+                <p>Click "Refresh Data" to fetch the latest solar flare information from NASA.</p>
             </div>
         {% endif %}
     </div>
 </div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
 function refreshSolarFlares() {
+    const btn = document.getElementById('refreshBtn');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-rotate-right fa-spin"></i> Refreshing…'; }
     showLoading('loading');
-    
+
     fetch('{% url "solarflares:refresh" %}', {
         method: 'POST',
-        headers: {
-            'X-CSRFToken': getCSRFToken(),
-            'Content-Type': 'application/json',
-        },
+        headers: { 'X-CSRFToken': getCSRFToken(), 'Content-Type': 'application/json' },
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
         hideLoading('loading');
-        
         if (data.success) {
-            showAlert(data.message, 'success');
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
+            showToast(data.message || 'Data refreshed!', 'success');
+            setTimeout(() => window.location.reload(), 1000);
         } else {
-            showAlert('Error refreshing data: ' + data.error, 'danger');
+            showToast('Error: ' + data.error, 'danger');
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-rotate-right"></i> Refresh Data'; }
         }
     })
-    .catch(error => {
+    .catch(err => {
         hideLoading('loading');
-        showAlert('Error refreshing data: ' + error.message, 'danger');
+        showToast('Network error: ' + err.message, 'danger');
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-rotate-right"></i> Refresh Data'; }
     });
 }
 
-// Render Plotly charts
+const plotlyConfig = { responsive: true, displayModeBar: false };
+const darkLayout = {
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    font: { color: '#8891b0', family: 'Inter, sans-serif', size: 11 },
+    margin: { t: 20, b: 40, l: 50, r: 20 },
+    xaxis: { gridcolor: 'rgba(99,120,255,0.1)', linecolor: 'rgba(99,120,255,0.2)', zerolinecolor: 'rgba(99,120,255,0.2)' },
+    yaxis: { gridcolor: 'rgba(99,120,255,0.1)', linecolor: 'rgba(99,120,255,0.2)', zerolinecolor: 'rgba(99,120,255,0.2)' },
+};
+
 {% if timeline_chart %}
-    Plotly.newPlot('timeline-chart', JSON.parse('{{ timeline_chart|safe }}').data, JSON.parse('{{ timeline_chart|safe }}').layout);
+try {
+    const tc = JSON.parse('{{ timeline_chart|safe }}');
+    Plotly.newPlot('timeline-chart', tc.data, Object.assign({}, tc.layout, darkLayout), plotlyConfig);
+} catch(e) { console.error('Timeline chart error', e); }
 {% endif %}
 
 {% if class_distribution %}
-    Plotly.newPlot('class-distribution', JSON.parse('{{ class_distribution|safe }}').data, JSON.parse('{{ class_distribution|safe }}').layout);
+try {
+    const cd = JSON.parse('{{ class_distribution|safe }}');
+    const pieLayout = Object.assign({}, cd.layout, {
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent',
+        font: { color: '#8891b0', family: 'Inter, sans-serif', size: 11 },
+        margin: { t: 20, b: 20, l: 20, r: 20 },
+        legend: { font: { color: '#8891b0' } },
+    });
+    Plotly.newPlot('class-distribution', cd.data, pieLayout, plotlyConfig);
+} catch(e) { console.error('Pie chart error', e); }
 {% endif %}
 </script>
-{% endblock %} 
+{% endblock %}

@@ -4,50 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Space Weather Dashboard{% endblock %}</title>
-    
+
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
     <!-- Custom CSS -->
     {% load static %}
     <link href="{% static 'css/custom.css' %}" rel="stylesheet">
-    <link href="{% static 'css/space-animations.css' %}" rel="stylesheet">
-    <link href="{% static 'css/utilities.css' %}" rel="stylesheet">
-    <!-- Plotly.js -->
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    
+
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Space particles background -->
-    <div class="space-particles"></div>
-    
+
+    <!-- Stars background -->
+    <div class="stars-container" aria-hidden="true">
+        <div class="stars"></div>
+        <div class="stars2"></div>
+        <div class="stars3"></div>
+    </div>
+
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top" id="mainNav">
         <div class="container">
             <a class="navbar-brand" href="{% url 'apod:home' %}">
-                <i class="fas fa-rocket"></i> Space Weather Dashboard
+                <span class="brand-icon"><i class="fas fa-satellite-dish"></i></span>
+                <span class="brand-text">SpaceWatch</span>
             </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
+
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'apod:home' %}">
+                        <a class="nav-link nav-pill {% if request.resolver_match.namespace == 'apod' %}active{% endif %}" href="{% url 'apod:home' %}">
                             <i class="fas fa-image"></i> APOD
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'solarflares:home' %}">
+                        <a class="nav-link nav-pill {% if request.resolver_match.namespace == 'solarflares' %}active{% endif %}" href="{% url 'solarflares:home' %}">
                             <i class="fas fa-sun"></i> Solar Flares
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'asteroids:home' %}">
+                        <a class="nav-link nav-pill {% if request.resolver_match.namespace == 'asteroids' %}active{% endif %}" href="{% url 'asteroids:home' %}">
                             <i class="fas fa-meteor"></i> Asteroids
                         </a>
                     </li>
@@ -56,79 +62,111 @@
         </div>
     </nav>
 
-    <!-- Messages -->
+    <!-- Toast Notification Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+        <div id="liveToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Django Messages -->
     {% if messages %}
         <div class="container mt-3">
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div class="alert-banner alert-{{ message.tags }} d-flex align-items-center gap-2" role="alert">
+                    <i class="fas {% if message.tags == 'error' %}fa-circle-xmark{% elif message.tags == 'warning' %}fa-triangle-exclamation{% elif message.tags == 'success' %}fa-circle-check{% else %}fa-circle-info{% endif %}"></i>
+                    <span>{{ message }}</span>
+                    <button type="button" class="ms-auto btn-dismiss" onclick="this.parentElement.remove()" aria-label="Close">
+                        <i class="fas fa-xmark"></i>
+                    </button>
                 </div>
             {% endfor %}
         </div>
     {% endif %}
 
     <!-- Main Content -->
-    <main class="container mt-4">
-        {% block content %}{% endblock %}
+    <main class="main-content">
+        <div class="container py-4">
+            {% block content %}{% endblock %}
+        </div>
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="site-footer">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5><i class="fas fa-rocket"></i> Space Weather Dashboard</h5>
-                    <p>Real-time space weather data from NASA APIs</p>
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <span class="footer-logo"><i class="fas fa-satellite-dish"></i> SpaceWatch</span>
+                    <p>Real-time space weather data powered by NASA APIs</p>
                 </div>
-                <div class="col-md-6 text-end">
-                    <p>Powered by NASA APIs</p>
-                    <p><small>Data provided by NASA's APOD, DONKI, and NeoWs APIs</small></p>
+                <div class="footer-links">
+                    <a href="{% url 'apod:home' %}"><i class="fas fa-image"></i> APOD</a>
+                    <a href="{% url 'solarflares:home' %}"><i class="fas fa-sun"></i> Solar Flares</a>
+                    <a href="{% url 'asteroids:home' %}"><i class="fas fa-meteor"></i> Asteroids</a>
+                </div>
+                <div class="footer-credit">
+                    <span>Powered by <a href="https://api.nasa.gov" target="_blank" rel="noopener">NASA APIs</a></span>
+                    <small>APOD &bull; DONKI &bull; NeoWs</small>
                 </div>
             </div>
         </div>
     </footer>
 
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- CSRF Token for AJAX requests -->
-    <meta name="csrf-token" content="{{ csrf_token }}">
-    
-    <!-- Custom JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        // Get CSRF token for AJAX requests
+        // CSRF Token
         function getCSRFToken() {
-            return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const name = 'csrftoken';
+            const cookies = document.cookie.split(';');
+            for (let c of cookies) {
+                c = c.trim();
+                if (c.startsWith(name + '=')) return c.substring(name.length + 1);
+            }
+            return '{{ csrf_token }}';
         }
-        
-        // Global functions for AJAX calls
-        function showLoading(elementId) {
-            document.getElementById(elementId).style.display = 'block';
+
+        // Toast notifications
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('liveToast');
+            const toastMsg = document.getElementById('toastMessage');
+            toastMsg.textContent = message;
+            toast.className = `toast align-items-center border-0 toast-${type}`;
+            new bootstrap.Toast(toast, { delay: 4000 }).show();
         }
-        
-        function hideLoading(elementId) {
-            document.getElementById(elementId).style.display = 'none';
+
+        // Loading overlay helpers
+        function showLoading(id) {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'flex';
         }
-        
-        function showAlert(message, type = 'info') {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
-            alertDiv.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            
-            const container = document.querySelector('.container');
-            container.insertBefore(alertDiv, container.firstChild);
-            
-            // Auto-dismiss after 5 seconds
-            setTimeout(() => {
-                alertDiv.remove();
-            }, 5000);
+        function hideLoading(id) {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
         }
+
+        // Highlight active nav link
+        document.querySelectorAll('.nav-pill').forEach(link => {
+            if (link.href === window.location.href) {
+                link.classList.add('active');
+            }
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('mainNav');
+            if (window.scrollY > 20) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
     </script>
-    
+
     {% block extra_js %}{% endblock %}
 </body>
-</html> 
+</html>

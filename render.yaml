@@ -3,14 +3,14 @@ services:
     name: space-weather-dashboard
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn space_weather_dashboard.wsgi
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+    startCommand: gunicorn space_weather_dashboard.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: SECRET_KEY
-        sync: false
+        generateValue: true
       - key: DEBUG
         value: "False"
       - key: ALLOWED_HOSTS
-        sync: false
+        value: "space-weather-dashboard.onrender.com"
       - key: NASA_API_KEY
         sync: false
